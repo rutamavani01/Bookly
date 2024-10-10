@@ -1,8 +1,8 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 
 const localizer = momentLocalizer(moment);
 
@@ -74,8 +74,74 @@ const getEvents = (schedule) => {
 
 const events = getEvents(scheduleData);
 
+// custome buttons
+const CustomToolbar = ({ date, onNavigate, onView }) => {
+    const goToBack = useCallback(() => {
+        onNavigate('PREV');
+    }, [onNavigate]);
+
+    const goToNext = useCallback(() => {
+        onNavigate('NEXT');
+    }, [onNavigate]);
+
+    const goToToday = useCallback(() => {
+        onNavigate('TODAY');
+    }, [onNavigate]);
+
+    const handleDateChange = useCallback((e) => {
+        onNavigate('DATE', new Date(e.target.value));
+    }, [onNavigate]);
+
+    return (
+        <div className="rbc-toolbar">
+            <span className="rbc-btn-group">
+                <button type="button" onClick={goToBack}>Back</button>
+                <button type="button" onClick={goToToday}>Today</button>
+                <button type="button" onClick={goToNext}>Next</button>
+            </span>
+
+            <span className="rbc-toolbar-label">
+                <input
+                    type="date"
+                    value={moment(date).format('YYYY-MM-DD')}
+                    onChange={handleDateChange}
+                />
+            </span>
+
+            <span className="rbc-btn-group">
+                <button onClick={() => onView('day')}>Day</button>
+                <button onClick={() => onView('work_week')}>Week</button>
+                <button onClick={() => onView('month')}>Month</button>
+                <button onClick={() => onView('timeline')}>Timeline</button>
+            </span>
+        </div>
+    );
+};
+
 export const Calendar = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
+
+    const [view, setView] = useState('work_week');
+    const [date, setDate] = useState(new Date(2024, 9, 10));
+
+    const handleViewChange = useCallback((newView) => {
+        setView(newView);
+    }, []);
+
+    const handleNavigate = useCallback((newDate) => {
+        setDate(newDate);
+    }, []);
+
+    const events = [
+        {
+            title: 'Example Event',
+            start: new Date(2024, 9, 10, 10, 0),
+            end: new Date(2024, 9, 10, 11, 0),
+            dentist: 'Dr. Smith',
+            contact: '+1234567890'
+        },
+        // Add more events as needed
+    ];
 
     const formatDateTime = (date) => {
         const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
@@ -177,15 +243,15 @@ export const Calendar = () => {
                 </div>
 
                 <div className='col-12 d-flex justify-content-between align-items-center'>
-                    <div className='col-4 d-flex justify-content-start  '>
+                    {/* <div className='col-4 d-flex justify-content-start  '>
                         <div className='arrow-box-left'> <img src="assets/image/left arrow.svg" /></div>
                         <div className='arrow-box-right'> <img src="assets/image/right arrow.svg" /></div>
                         <div ><button className='today-btn'>Today</button></div>
                     </div>
                     <div className='col-4'>
                         <h5>{formatDateTime(currentTime)}</h5>
-                    </div>
-                    <div className='col-4'>
+                    </div> */}
+                    {/* <div className='col-4'>
                         <div className='d-flex justify-content-center'>
                             <button className='today-day1'>Mon</button>
                             <button className='today-day2'>Week</button>
@@ -194,7 +260,7 @@ export const Calendar = () => {
 
                             <button className='today-btn'>List</button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className='col-12'>
@@ -205,11 +271,15 @@ export const Calendar = () => {
                             startAccessor="start"
                             endAccessor="end"
                             style={{ height: 600 }}
-                            defaultView="work_week"
-                            views={['day', 'work_week', 'month']}
-                            step={30}  // To show 30-minute time slots
-                            timeslots={2}  // Split each hour into 2 slots
-                            defaultDate={new Date(2024, 9, 10)}  // October 10th, 2024
+                            view={view}
+                            onView={handleViewChange}
+                            date={date}
+                            onNavigate={handleNavigate}
+                            views={['day', 'work_week', 'month', 'timeline']}
+                            step={30}
+                            timeslots={2}
+                            min={moment(date).set('hour', 7).toDate()}
+                            max={moment(date).set('hour', 17).toDate()}
                             components={{
                                 event: ({ event }) => (
                                     <span>
@@ -218,6 +288,7 @@ export const Calendar = () => {
                                         Contact: {event.contact}
                                     </span>
                                 ),
+                                toolbar: CustomToolbar,
                             }}
                         />
                     </div>
