@@ -2,9 +2,9 @@ import React from 'react'
 
 const Sidebar2 = () => {
     return (
-        <div className="d-flex flex-column  sidebar pt-5 text-white bg-dark" style={{ width: 192, }}>
+        <div className="d-flex flex-column  sidebar text-white bg-dark" style={{ width: 160, }}>
             <ul className="nav nav-pills flex-column mb-auto text-start">
-                <li className="nav-item bookly-nav">
+                <li className="nav-item bookly-nav s2">
                     <a href="#" className="nav-link text-white " aria-current="page">
                         <img src='/assets/image/logo.png' className='me-2' />
                         Bookly
@@ -15,22 +15,22 @@ const Sidebar2 = () => {
                 <div className=''>
                     <ul className='menu'>
                         <li>
-                            <a href="#" className="d-flex justify-content-lg-start nav-link text-white ">
+                            <a href="/dashboard" className="d-flex justify-content-lg-start nav-link text-white ">
                                 Dashboard
                             </a>
                         </li>
                         <li>
-                            <a href="#" className="d-flex justify-content-lg-start nav-link text-white ">
-                                Calender
+                            <a href="calendar" className="d-flex justify-content-lg-start nav-link text-white ">
+                                Calendar
                             </a>
                         </li>
                         <li>
-                            <a href="#" className="d-flex justify-content-lg-start nav-link text-white ">
+                            <a href="/appointment" className="d-flex justify-content-lg-start nav-link text-white ">
                                 Appointment
                             </a>
                         </li>
                         <li>
-                            <a href="#" className="d-flex justify-content-lg-start nav-link text-white ">
+                            <a href="/staffmember" className="d-flex justify-content-lg-start nav-link text-white ">
                                 Staff Members
                             </a>
                         </li>
@@ -105,12 +105,12 @@ const Sidebar2 = () => {
                         </li>
                         <li className='sidebar2-icon'>
                             <a href="#" className="d-flex justify-content-lg-start nav-link text-white ">
-                             <img src='/assets/image/menu_cloud.png'/>   Dashboard
+                                <img src='/assets/image/menu_cloud.png' />   Dashboard
                             </a>
                         </li>
                         <li className='sidebar2-icon'>
                             <a href="#" className="d-flex justify-content-lg-start nav-link text-white ">
-                             <img src='/assets/image/collapse menu.png'/>   Dashboard
+                                <img src='/assets/image/collapse menu.png' />   Dashboard
                             </a>
                         </li>
                     </ul>

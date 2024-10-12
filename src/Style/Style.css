@@ -63,8 +63,11 @@ ul {
 }
 
 .menu li a {
-    font-size: 17px !important;
+    font-size: 15px !important;
     margin-left: 14px;
+}
+.s2 a {
+font-size: 18px !important;
 }
 
 .addons {
@@ -316,4 +319,101 @@ ul {
 
 .today-day4 {
     border-radius: 0px 4px 4px 0px;
+}
+
+/* modal */
+.modal-dialog {
+    max-width: 50% !important;
+}
+
+.modal-header {
+    padding: 5px !important;
+    font-size: 16px !important;
+}
+
+.form {
+    width: 82% !important;
+}
+
+.btn-newCust {
+    background-color: var(--darkBlue) !important;
+    border: 0px !important;
+}
+
+.btnClose {
+    background-color: rgb(236, 236, 236) !important;
+    color: var(--darkBlack) !important;
+    border: 0.5px solid var(--gray) !important;
+}
+
+.modal-title {
+    font-size: 18px !important;
+    padding: 10px !important;
+}
+
+.btn-close {
+    font-size: 12px !important;
+    padding: 20px !important;
+}
+
+.rbc-event {
+    height: 0 auto !important;
+}
+
+/* appointment */
+.appointment,
+.staffmember {
+    border: 0.5px solid rgb(165, 165, 165);
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.btn-appointment {
+    border: 0.5px solid var(--gray);
+    border-radius: 4px;
+    margin: 4px;
+    padding: 4px 7px;
+    background-color: var(--white);
+}
+
+.btn-appointment:nth-child(3) {
+    color: white;
+    background-color: var(--darkBlue);
+    border: 0;
+    font-weight: 400;
+}
+
+.appointment-table {
+    margin-top: 20px;
+}
+
+.appointment-button {
+    margin-top: 20px;
+}
+
+.edit-btn {
+    border: 0.2px solid var(--gray);
+    background-color: var(--white);
+    border-radius: 3px;
+    color: var(--gray);
+}
+
+.edit-btn:hover {
+    background-color: rgba(226, 226, 226, 0.363);
+}
+
+/* Staff Member */
+.sm-input {
+    padding: 5px 30px;
+    border-radius: 4px;
+    border: 0.5px solid var(--gray);
+    ;
+}
+
+.staffmember-btn {
+    margin-top: 20px;
+}
+
+.sm-checkbox input {
+    margin-right: 5px;
 }
