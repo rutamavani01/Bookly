@@ -14,7 +14,7 @@ const Appointment = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);
 
     const totalItems = 50; // Total items you have in your data
-    const itemsPerPage = 5; // Show 5 records per page
+    const itemsPerPage = 10;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -30,6 +30,7 @@ const Appointment = () => {
         { id: 8, date: '2022-05-06', startTime: '13:00', endTime: '15:00', name: 'David', service: 'Service F', duration: '2 hr', status: 'Approved', payment: '$60.00 PayPal Complete' },
         { id: 9, date: '2022-05-06', startTime: '13:00', endTime: '15:00', name: 'David', service: 'Service F', duration: '2 hr', status: 'Approved', payment: '$60.00 PayPal Complete' },
         { id: 10, date: '2022-05-06', startTime: '13:00', endTime: '15:00', name: 'David', service: 'Service F', duration: '2 hr', status: 'Approved', payment: '$60.00 PayPal Complete' },
+        { id: 11, date: '2022-05-06', startTime: '13:00', endTime: '15:00', name: 'David', service: 'Service F', duration: '2 hr', status: 'Approved', payment: '$60.00 PayPal Complete' },
         // Add more records if needed
     ];
 
