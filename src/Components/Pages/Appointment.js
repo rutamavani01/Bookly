@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useEffect } from 'react';
+import { faPlus, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faTrashCan, faBars } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import moment from 'moment';
 import { Button, Modal, Form, Row, Col, Pagination } from 'react-bootstrap';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const Appointment = () => {
 
@@ -13,12 +15,43 @@ const Appointment = () => {
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
-    const totalItems = 50; // Total items you have in your data
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
+    const [showColumnModal, setShowColumnModal] = useState(false);
+    const [columnVisibility, setColumnVisibility] = useState({
+        ID: true,
+        No: false,
+        'Appointment date': true,
+        Employee: true,
+        'Customer name': true,
+        'Customer phone': true,
+        'Customer email': true,
+        Service: true,
+        Duration: true,
+        Status: true,
+        Payment: true,
+        Notes: true,
+        Created: true,
+        'Internal note': false,
+        'Customer address': true,
+        'Customer birthday': true,
+        'Online meeting': true
+    });
+
+    useEffect(() => {
+        const savedVisibility = localStorage.getItem('columnVisibility');
+        if (savedVisibility) {
+            setColumnVisibility(JSON.parse(savedVisibility));
+        }
+    }, []);
+
+
+    const totalItems = 50;
     const itemsPerPage = 10;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Dummy data for example
     const data = [
         { id: 1, date: '2022-05-02', startTime: '10:00', endTime: '12:00', name: 'John Doe', service: 'Service A', duration: '2 hr', status: 'Approved', payment: '$35.00 PayPal Complete' },
         { id: 2, date: '2022-05-02', startTime: '10:00', endTime: '12:00', name: 'Jane Doe', service: 'Service B', duration: '1 hr', status: 'Approved', payment: '$40.00 PayPal Complete' },
@@ -66,6 +99,96 @@ const Appointment = () => {
         }
     };
 
+    // hide & unhide columns
+    const ColumnVisibilityModal = ({ show, handleClose, columnVisibility, setColumnVisibility }) => {
+        const [tempVisibility, setTempVisibility] = useState(columnVisibility);
+
+        const handleCheckboxChange = (column) => {
+            setTempVisibility(prev => ({ ...prev, [column]: !prev[column] }));
+        };
+
+        const handleSave = () => {
+            setColumnVisibility(tempVisibility);
+            localStorage.setItem('columnVisibility', JSON.stringify(tempVisibility));
+            handleClose();
+        };
+
+        const onDragEnd = (result) => {
+            console.log("okok")
+            if (!result.destination) return;
+
+            const items = Array.from(Object.keys(tempVisibility));
+            const [reorderedItem] = items.splice(result.source.index, 1);
+            items.splice(result.destination.index, 0, reorderedItem);
+
+            const newVisibility = {};
+            items.forEach(key => {
+                newVisibility[key] = tempVisibility[key];
+            });
+
+            setTempVisibility(newVisibility);
+        };
+
+
+        return (
+            <Modal show={show} onHide={handleClose} size="lg">
+                <Modal.Header closeButton>
+                    <Modal.Title>Table settings</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="d-flex justify-content-between mb-3">
+                        <div><b>Column</b></div>
+                        <div><b>Show</b></div>
+                    </div>
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="columns">
+                            {(provided) => (
+                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                    {Object.keys(tempVisibility).map((column, index) => (
+                                        <Draggable key={column} draggableId={column} index={index}>
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    className="d-flex align-items-center justify-content-between p-1"
+                                                >
+                                                    <div className="d-flex align-items-center">
+                                                        <div {...provided.dragHandleProps} className="me-3">
+                                                            <FontAwesomeIcon icon={faBars} />
+                                                        </div>
+                                                        <span>{column}</span>
+                                                    </div>
+                                                    <Form.Check
+                                                        type="checkbox"
+                                                        id={`checkbox-${column}`}
+                                                        checked={tempVisibility[column]}
+                                                        onChange={() => handleCheckboxChange(column)}
+                                                        className="m-0"
+                                                    />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button className='btn-newCust' onClick={handleSave}>
+                        Save
+                    </Button>
+                    <Button className='btnClose' onClick={handleClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    };
+
+    const handleShowColumnModal = () => setShowColumnModal(true);
+    const handleCloseColumnModal = () => setShowColumnModal(false);
 
     return (
         <div className='container-fluid'>
@@ -86,7 +209,16 @@ const Appointment = () => {
                         <button className='btn-appointment'><img src='assets/image/appointment/csv.svg' className='me-2' />Export to CSV...</button>
                         <button className='btn-appointment '><img src='assets/image/appointment/print.svg' className='me-2' />Print</button>
                         <button className='btn-appointment' onClick={handleShowModal}><FontAwesomeIcon icon={faPlus} /> New appointment</button>
-                        <button className='btn-appointment'><img src='assets/image/appointment/eye.svg' /></button>
+                        <button className='btn-appointment' onClick={handleShowColumnModal}>
+                            <FontAwesomeIcon icon={faEye} />
+                        </button>
+
+                        <ColumnVisibilityModal
+                            show={showColumnModal}
+                            handleClose={handleCloseColumnModal}
+                            columnVisibility={columnVisibility}
+                            setColumnVisibility={setColumnVisibility}
+                        />
                     </div>
 
                     <Modal show={showModal} onHide={handleCloseModal}>
@@ -183,36 +315,61 @@ const Appointment = () => {
                     </Modal>
                 </div>
 
+                <div className='col-lg-12 d-flex justify-content-between align-items-center appointment-btn'>
+                    <div className='col-lg-1'>
+                        <input type='text' className='w-90 sm-input m-0 p-1' placeholder='ID' />
+                    </div>
+                    <div className='col-lg-2'>
+                        <input type='date' />
+                    </div>
+                    <div className='col-lg-2'>
+                        <input type='date' />
+                    </div>
+                    <div className='col-lg-2 '>
+                        <select id="displayName" className="form-select appointment-dropdown">
+                            <option value="">Employee</option>
+                        </select>
+                    </div>
+                    <div className='col-lg-2 '>
+                        <select id="displayName" className="form-select appointment-dropdown">
+                            <option value="">Customer</option>
+                        </select>
+                    </div>
+                    <div className='col-lg-2'>
+                        <select id="displayName" className="form-select appointment-dropdown">
+                            <option value="">Service</option>
+                        </select>
+                    </div>
+                    <div className='col-lg-1'>
+                        <select id="displayName" className="form-select appointment-dropdown">
+                            <ul>
+                                <li>All Status</li>
+                                <li>Pending</li>
+                                <li>Approved</li>
+                            </ul>
+                        </select>
+                    </div>
+                </div>
+                <hr></hr>
+
                 {/* Table */}
-                <div className='col-12 appointment-table'>
-                    <table className='table table-bordered'>
+                <div className='col-12 appointment-table text-start'>
+                    <table className='table table-striped '>
                         <thead>
                             <tr>
-                                <th scope='col'>ID</th>
-                                <th scope='col'>Appointment date</th>
-                                <th scope='col'>Start Time</th>
-                                <th scope='col'>End Time</th>
-                                <th scope='col'>Customer name</th>
-                                <th scope='col'>Service</th>
-                                <th scope='col'>Duration</th>
-                                <th scope='col'>Status</th>
-                                <th scope='col'>Payment</th>
-                                <th scope='col'></th>
-                                <th scope='col'><input type='checkbox' /></th>
+                                {Object.entries(columnVisibility).map(([column, isVisible]) =>
+                                    isVisible && <th key={column} scope='col'>{column}</th>
+                                )}
+                                <th ></th>
+                                <th><input type='checkbox' /></th>
                             </tr>
                         </thead>
                         <tbody>
                             {paginatedData.map((item) => (
                                 <tr key={item.id}>
-                                    <td>{item.id}</td>
-                                    <td>{item.date}</td>
-                                    <td>{item.startTime}</td>
-                                    <td>{item.endTime}</td>
-                                    <td>{item.name}</td>
-                                    <td>{item.service}</td>
-                                    <td>{item.duration}</td>
-                                    <td>{item.status}</td>
-                                    <td>{item.payment}</td>
+                                    {Object.entries(columnVisibility).map(([column, isVisible]) =>
+                                        isVisible && <td key={column}>{item[column]}</td>
+                                    )}
                                     <td>
                                         <button className='edit-btn' onClick={() => handleEditClick(item)}>
                                             <FontAwesomeIcon icon={faPenToSquare} /> Edit

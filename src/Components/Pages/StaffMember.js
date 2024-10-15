@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faCircle, faPenToSquare, faTrashCan, faUser, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faCircle, faPenToSquare, faTrashCan, faEye, faBars } from '@fortawesome/free-solid-svg-icons';
 import { Pagination, Modal, Button, Form, InputGroup, Image } from 'react-bootstrap';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 export const StaffMember = () => {
   const [showStaffOrderModal, setShowStaffOrderModal] = useState(false);
@@ -12,10 +14,36 @@ export const StaffMember = () => {
   // const [showModal, setShowModal] = useState(false);
   // const [modalMode, setModalMode] = useState('add');
   // const [selectedStaff, setSelectedStaff] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
 
   const [showNewStaffModal, setShowNewStaffModal] = useState(false);
+  const [showColumnModal, setShowColumnModal] = useState(false);
+  const [columnVisibility, setColumnVisibility] = useState({
+    ID: true,
+    No: false,
+    'Appointment date': true,
+    Employee: true,
+    'Customer name': true,
+    'Customer phone': true,
+    'Customer email': true,
+    Service: true,
+    Duration: true,
+    Status: true,
+    Payment: true,
+    Notes: true,
+    Created: true,
+    'Internal note': false,
+    'Customer address': true,
+    'Customer birthday': true,
+    'Online meeting': true
+  });
+
+  useEffect(() => {
+    const savedVisibility = localStorage.getItem('columnVisibility2');
+    if (savedVisibility) {
+      setColumnVisibility(JSON.parse(savedVisibility));
+    }
+  }, []);
 
   const [categories, setCategories] = useState([
     { id: 1, name: 'General' },
@@ -73,7 +101,7 @@ export const StaffMember = () => {
       <Modal.Body>
         <ul>
           {data.map((staff) => (
-            <li key={staff.id} className='m-1'><img src='assets/image/staffmember/3line.svg' width={"2%"} className='me-2' />{staff.name}</li>
+            <li key={staff.id} className='m-1'><img src='assets/image/staffmember/3line.svg' width={"2%"} className='me-4 m-2' />{staff.name}</li>
           ))}
         </ul>
         <p>Adjust the order of staff members in your booking form</p>
@@ -104,14 +132,14 @@ export const StaffMember = () => {
   };
   // category modal
   const CategoriesModal = () => (
-    <Modal show={showCategoriesModal} onHide={() => setShowCategoriesModal(false)}>
+    <Modal show={showCategoriesModal} onHide={() => setShowCategoriesModal(false)} size='xs'>
       <Modal.Header closeButton>
         <Modal.Title>Categories</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {categories.map(category => (
           <div key={category.id}>
-            <InputGroup className="mb-3">
+            {/* <InputGroup className="mb-3">
               <Form.Control type="text" value={category.name} readOnly />
               <Button variant="danger" onClick={() => deleteCategory(category.id)}>
                 <FontAwesomeIcon icon={faTrashCan} />
@@ -125,11 +153,40 @@ export const StaffMember = () => {
               <div className="mb-3">
                 <Form.Control as="textarea" placeholder="Insert additional details..." />
               </div>
-            )}
+            )} */}
+
+            <InputGroup className='mb-3 col-12'>
+              <div class="accordion" id="accordionPanelsStayOpenExample" width="100%">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                      <div className='col-12 d-flex justify-content-between align-items-center'>
+                        <div className='col-2'>
+                          <img src=' assets/image/staffmember/3line.svg' />
+                        </div>
+                        <div className='col-9'>
+                          <input type='text' id='general'></input>
+                        </div>
+                        <div className='col-2'>
+                          <Button variant="danger" onClick={() => deleteCategory(category.id)}>
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </Button>
+                        </div>
+                      </div>
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                    <div class="accordion-body">
+                      <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plu the <code>.accordion-body</code>, though the transition does limit overflow.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </InputGroup>
           </div>
         ))}
 
-        <InputGroup className="mb-3">
+        {/* <InputGroup className="mb-3">
           <Form.Control
             type="text"
             value={newCategory}
@@ -137,12 +194,12 @@ export const StaffMember = () => {
             placeholder="Add new category"
           />
           <Button variant="success" onClick={addCategory}>+ Add category</Button>
-        </InputGroup>
+        </InputGroup> */}
         <p>Adjust the order of categories in your booking form</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={() => alert('Categories saved!')}>Save</Button>
-        <Button onClick={() => setShowCategoriesModal(false)}>Close</Button>
+        <Button className='btn-newCust' onClick={() => alert('Categories saved!')}>Save</Button>
+        <Button className='btnClose' onClick={() => setShowCategoriesModal(false)}>Close</Button>
       </Modal.Footer>
     </Modal>
   );
@@ -383,6 +440,97 @@ export const StaffMember = () => {
     );
   };
 
+  // hide unhide logic
+  const ColumnVisibilityModal = ({ show, handleClose, columnVisibility, setColumnVisibility }) => {
+    const [tempVisibility, setTempVisibility] = useState(columnVisibility);
+
+    const handleCheckboxChange = (column) => {
+      setTempVisibility(prev => ({ ...prev, [column]: !prev[column] }));
+    };
+
+    const handleSave = () => {
+      setColumnVisibility(tempVisibility);
+      localStorage.setItem('columnVisibility', JSON.stringify(tempVisibility));
+      handleClose();
+    };
+
+    const onDragEnd = (result) => {
+      console.log("okok")
+      if (!result.destination) return;
+
+      const items = Array.from(Object.keys(tempVisibility));
+      const [reorderedItem] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, reorderedItem);
+
+      const newVisibility = {};
+      items.forEach(key => {
+        newVisibility[key] = tempVisibility[key];
+      });
+
+      setTempVisibility(newVisibility);
+    };
+
+
+    return (
+      <Modal show={show} onHide={handleClose} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Table settings</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="d-flex justify-content-between mb-3">
+            <div><b>Column</b></div>
+            <div><b>Show</b></div>
+          </div>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="columns">
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  {Object.keys(tempVisibility).map((column, index) => (
+                    <Draggable key={column} draggableId={column} index={index}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className="d-flex align-items-center justify-content-between p-1"
+                        >
+                          <div className="d-flex align-items-center">
+                            <div {...provided.dragHandleProps} className="me-3">
+                              <FontAwesomeIcon icon={faBars} />
+                            </div>
+                            <span>{column}</span>
+                          </div>
+                          <Form.Check
+                            type="checkbox"
+                            id={`checkbox-${column}`}
+                            checked={tempVisibility[column]}
+                            onChange={() => handleCheckboxChange(column)}
+                            className="m-0"
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className='btn-newCust' onClick={handleSave}>
+            Save
+          </Button>
+          <Button className='btnClose' onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+
+  const handleShowColumnModal = () => setShowColumnModal(true);
+  const handleCloseColumnModal = () => setShowColumnModal(false);
+
   return (
     <div className='container-fluid'>
       {/* Header Section */}
@@ -422,35 +570,34 @@ export const StaffMember = () => {
             <button className='btn-appointment' onClick={() => setShowNewStaffModal(true)}>
               <FontAwesomeIcon icon={faPlus} /> New staff
             </button>
-            <button className='btn-appointment'>
-              <img src='assets/image/appointment/eye.svg' alt='View' />
+            <button className='btn-appointment' onClick={handleShowColumnModal}>
+              <FontAwesomeIcon icon={faEye} />
             </button>
           </div>
         </div>
 
         {/* Search & Filters */}
-        <div className='col-9 d-flex justify-content-between align-items-start staffmember-btn'>
-          <div className='col-sm-2'>
+        <div className='col-9 d-flex justify-content-start align-items-center staffmember-btn'>
+          <div className='col-md-6 text-start'>
             <input type='text' className='sm-input' placeholder='Quick search staff' />
           </div>
-          <div className='col-sm-3'>
+          <div className='col-md-2 search-dropdown col-lg-3'>
             <select className='form-select'>
               <option value="">Categories</option>
-              {/* Add more categories here */}
             </select>
           </div>
-          <div className='col-sm-2'>
+          <div className='col-md-2'>
             <select className='form-select'>
               <option value="">Visibility</option>
               {/* Add visibility options here */}
             </select>
           </div>
-          <div className='col-sm-2 sm-checkbox'>
+          <div className='col-md-1 col-lg-2  my-auto sm-checkbox'>
             <input type='checkbox' className='d-inline' />
             <p className='d-inline'>Show archived</p>
           </div>
         </div>
-
+<hr></hr>
         {/* Staff Table */}
         <div className='col-12'>
           <table className='table table-striped table-hover'>

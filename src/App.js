@@ -10,6 +10,7 @@ import { Calendar } from './Components/Pages/Calendar';
 import { Layout2 } from './Components/Layout2';
 import Appointment from './Components/Pages/Appointment';
 import { StaffMember } from './Components/Pages/StaffMember';
+import { Service } from './Components/Pages/Service';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path='/calendar' element={<Calendar />} />
             <Route path='/appointment' element={<Appointment />} />
             <Route path='/staffmember' element={<StaffMember/>} />
+            <Route path='/service' element={<Service/>} />
           </Route>
         </Routes>
       </Router>

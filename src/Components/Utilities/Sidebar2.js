@@ -2,8 +2,8 @@ import React from 'react'
 
 const Sidebar2 = () => {
     return (
-        <div className="d-flex flex-column  sidebar text-white bg-dark" style={{ width: 160, }}>
-            <ul className="nav nav-pills flex-column mb-auto text-start">
+        <div className="d-flex flex-column  sidebar text-white bg-dark" style={{ width: 165,height:'100vh' }}>
+            <ul className="nav nav-pills flex-column text-start">
                 <li className="nav-item bookly-nav s2">
                     <a href="#" className="nav-link text-white " aria-current="page">
                         <img src='/assets/image/logo.png' className='me-2' />
@@ -35,7 +35,7 @@ const Sidebar2 = () => {
                             </a>
                         </li>
                         <li>
-                            <a href="#" className="d-flex justify-content-lg-start nav-link text-white ">
+                            <a href="/service" className="d-flex justify-content-lg-start nav-link text-white ">
                                 Services
                             </a>
                         </li>
@@ -110,7 +110,7 @@ const Sidebar2 = () => {
                         </li>
                         <li className='sidebar2-icon'>
                             <a href="#" className="d-flex justify-content-lg-start nav-link text-white ">
-                                <img src='/assets/image/collapse menu.png' />   Dashboard
+                                <img src='/assets/image/collapse menu.png' />   collapse menu
                             </a>
                         </li>
                     </ul>
